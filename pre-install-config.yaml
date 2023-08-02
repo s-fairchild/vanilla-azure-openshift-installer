@@ -1,0 +1,43 @@
+# additionalTrustBundlePolicy: Proxyonly 
+apiVersion: v1
+Kind: InstallConfig
+metadata:
+  creationTimestamp: null
+  name: steven-workload-testing
+sshKey: "${NetworkResourceGroupName}"
+publish: "Internal"
+fips: true
+baseDomain: catchall.azure.devcluster.openshift.com 
+featureSet: TechPreviewNoUpgrade 
+# credentialsMode: "Passthrough"
+pullSecret: '${PULL_SECRET}'
+compute:
+- architecture: amd64
+  hyperthreading: Enabled 
+  name: worker
+  platform: {}
+controlPlane:
+  architecture: amd64
+  hyperthreading: Enabled 
+  name: master
+  replicas: 3
+networking:
+  clusterNetwork:
+  - cidr: 10.128.0.0/14
+    hostPrefix: 23
+  machineNetwork:
+  - cidr: 10.0.0.0/16
+  networkType: OVNKubernetes 
+  serviceNetwork:
+  - 172.30.0.0/16
+platform:
+  azure:
+    # instanceType: Standard_D4s_V3
+    # vmNetworkingType: accelerated
+    # zones: ["2"]
+    region: eastus
+    # managedBy: ${RESOURCEGROUP}
+    networkResourceGroupName: ${RESOURCEGROUP_NETWORK}
+    computeSubnet: ${RESOURCEGROUP_COMPUTE}
+    controlPlaneSubnet: 10.128.0.0/14
+    virtualNetwork: ${SUBNET_PREFIXES}
