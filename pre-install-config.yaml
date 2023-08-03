@@ -10,11 +10,17 @@ fips: true
 baseDomain: catchall.azure.devcluster.openshift.com
 featureSet: TechPreviewNoUpgrade
 pullSecret: '${PULL_SECRET}'
+credentialsMode: Manual
 compute:
 - architecture: amd64
   hyperthreading: Enabled
   name: worker
-  platform: {}
+  replicas: 3
+  platform:
+    azure:
+      type: Standard_D4s_V3
+      zones: ["1", "2", "3"]
+      vmNetworkingType: Accelerated
 controlPlane:
   architecture: amd64
   hyperthreading: Enabled 
@@ -36,6 +42,5 @@ platform:
     computeSubnet: ${WORKER_SUBNET}
     controlPlaneSubnet: ${MASTER_SUBNET}
     virtualNetwork: ${VNET}
-    # instanceType: Standard_D4s_V3
-    # vmNetworkingType: accelerated
-    # zones: ["2"]
+    cloudName: AzurePublicCloud
+    resourceGroupName: ${RESOURCEGROUP_CLUSTER}

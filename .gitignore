@@ -2,3 +2,4 @@ secrets/*
 *.openshift_install.log
 install-config.yaml
 env*
+tmp.*

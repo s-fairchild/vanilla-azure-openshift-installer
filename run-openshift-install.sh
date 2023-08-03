@@ -18,13 +18,11 @@ main() {
     envsubst < "${install_config}" > "${install_dir}/install-config.yaml"
 
     openshift-install create manifests --dir "${install_dir}" --log-level "${log_level}"
-
-    rm -rf "${install_dir}"
 }
 
 pre_install() {
     echo "Creating required resources"
-    for g in $RESOURCEGROUP $RESOURCEGROUP_NETWORK $RESOURCEGROUP_COMPUTE; do
+    for g in "$RESOURCEGROUP" "$RESOURCEGROUP_NETWORK" "$RESOURCEGROUP_COMPUTE" "$RESOURCEGROUP_CLUSTER"; do
         az group create -n "${g}" -l "${LOCATION}"
     done
 
@@ -44,6 +42,19 @@ pre_install() {
         --vnet-name "${VNET}" \
         --name "${MASTER_SUBNET}" \
         --address-prefixes "${MASTER_SUBNET_PREFIXES}"
+
+
+}
+
+create_sp() {
+    az ad sp create-for-rbac \
+        --role contributor \
+        --name "${USER}-cluster" \
+        --scopes "/subscriptions/${AZURE_SUBSCRIPTION_ID}"
+    
+    az ad sp credential reset \
+        --id b0e43187-7970-446c-af68-6a82f96d0707 \
+        --cert "@secrets/cert.pem"
 }
 
 main "${@}"
