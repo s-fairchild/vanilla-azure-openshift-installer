@@ -4,7 +4,7 @@ set -o errexit \
     -o pipefail
 
 main() {
-    . ./env.sh
+    . ./env.env
 
     if [[ $1 != "--skip-preinstall" ]]; then
         pre_install

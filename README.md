@@ -4,6 +4,14 @@
 
 ### Getting Started
 
+1.
+   Copy and modify environment file as needed
+   ```bash
+   cp env.example env.env
+
+   # Edit if needed
+   vim env.env
+   ```
 1. 
    ```bash
     git clone https://github.com/s-fairchild/vanilla-azure-openshift-installer.git
