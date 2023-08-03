@@ -4,16 +4,15 @@ Kind: InstallConfig
 metadata:
   creationTimestamp: null
   name: steven-workload-testing
-sshKey: "${NetworkResourceGroupName}"
+sshKey: "${WI_SSH_KEY_PUBLIC}"
 publish: "Internal"
 fips: true
-baseDomain: catchall.azure.devcluster.openshift.com 
-featureSet: TechPreviewNoUpgrade 
-# credentialsMode: "Passthrough"
+baseDomain: catchall.azure.devcluster.openshift.com
+featureSet: TechPreviewNoUpgrade
 pullSecret: '${PULL_SECRET}'
 compute:
 - architecture: amd64
-  hyperthreading: Enabled 
+  hyperthreading: Enabled
   name: worker
   platform: {}
 controlPlane:
@@ -23,21 +22,20 @@ controlPlane:
   replicas: 3
 networking:
   clusterNetwork:
-  - cidr: 10.128.0.0/14
-    hostPrefix: 23
+    - cidr: 10.128.0.0/14
+      hostPrefix: 23
   machineNetwork:
-  - cidr: 10.0.0.0/16
-  networkType: OVNKubernetes 
+    - cidr: 10.0.0.0/16
+  networkType: OVNKubernetes
   serviceNetwork:
-  - 172.30.0.0/16
+    - 172.30.0.0/16
 platform:
   azure:
+    region: eastus
+    networkResourceGroupName: ${RESOURCEGROUP_NETWORK}
+    computeSubnet: ${WORKER_SUBNET}
+    controlPlaneSubnet: ${MASTER_SUBNET}
+    virtualNetwork: ${VNET}
     # instanceType: Standard_D4s_V3
     # vmNetworkingType: accelerated
     # zones: ["2"]
-    region: eastus
-    # managedBy: ${RESOURCEGROUP}
-    networkResourceGroupName: ${RESOURCEGROUP_NETWORK}
-    computeSubnet: ${RESOURCEGROUP_COMPUTE}
-    controlPlaneSubnet: 10.128.0.0/14
-    virtualNetwork: ${SUBNET_PREFIXES}
