@@ -1,16 +1,43 @@
-# additionalTrustBundlePolicy: Proxyonly 
 apiVersion: v1
 Kind: InstallConfig
 metadata:
   creationTimestamp: null
-  name: steven-workload-testing
+  name: steven-wi
 sshKey: "${WI_SSH_KEY_PUBLIC}"
-publish: "Internal"
+publish: External
+capabilities:
+  baselineCapabilitySet: None
+  additionalEnabledCapabilities:
+    - Console
+    - CSISnapshot
+    - Insights
+    - marketplace
+    - openshift-samples
+    - Storage
 fips: true
 baseDomain: catchall.azure.devcluster.openshift.com
 featureSet: TechPreviewNoUpgrade
 pullSecret: '${PULL_SECRET}'
 credentialsMode: Manual
+imageContentSources:
+  - source: "quay.io/openshift-release-dev/ocp-release"
+    mirrors:
+      - "arointsvc.azurecr.io/openshift-release-dev/ocp-release"
+  - source: "quay.io/openshift-release-dev/ocp-release-nightly"
+    mirrors:
+      - "arointsvc.azurecr.io/quay.io/openshift-release-dev/ocp-release-nightly"
+  - source: "quay.io/openshift-release-dev/ocp-v4.0-art-dev"
+    mirrors:
+      - "arointsvc.azurecr.io/quay.io/openshift-release-dev/ocp-release-nightly"
+networking:
+  clusterNetwork:
+    - cidr: 10.128.0.0/23
+      hostPrefix: 23
+  machineNetwork:
+    - cidr: 10.0.0.0/16
+  networkType: OVNKubernetes
+  serviceNetwork:
+    - 172.30.0.0/16
 compute:
 - architecture: amd64
   hyperthreading: Enabled
@@ -21,26 +48,37 @@ compute:
       type: Standard_D4s_V3
       zones: ["1", "2", "3"]
       vmNetworkingType: Accelerated
+      osDisk:
+        diskSizeGB: 1024
+        diskEncryptionSet:
+          name: osEncryptedDisk
+          resourceGroup: ${RESOURCEGROUP}
+          subscriptionID: ${AZURE_SUBSCRIPTION_ID}
 controlPlane:
   architecture: amd64
   hyperthreading: Enabled 
   name: master
   replicas: 3
-networking:
-  clusterNetwork:
-    - cidr: 10.128.0.0/14
-      hostPrefix: 23
-  machineNetwork:
-    - cidr: 10.0.0.0/16
-  networkType: OVNKubernetes
-  serviceNetwork:
-    - 172.30.0.0/16
+  platform:
+    azure:
+      type: Standard_D4s_v3
+      zones: ["1", "2", "3"]
+      vmNetworkingType: Accelerated
+      osDisk:
+        diskSizeGB: 1024
+        diskEncryptionSet:
+          name: osEncryptedDisk
+          resourceGroup: ${RESOURCEGROUP}
+          subscriptionID: ${AZURE_SUBSCRIPTION_ID}
 platform:
   azure:
     region: eastus
     networkResourceGroupName: ${RESOURCEGROUP_NETWORK}
+    baseDomainResourceGroupName: ${RESOURCEGROUP_NETWORK}
     computeSubnet: ${WORKER_SUBNET}
     controlPlaneSubnet: ${MASTER_SUBNET}
     virtualNetwork: ${VNET}
     cloudName: AzurePublicCloud
     resourceGroupName: ${RESOURCEGROUP_CLUSTER}
+    outboundType: Loadbalancer
+
